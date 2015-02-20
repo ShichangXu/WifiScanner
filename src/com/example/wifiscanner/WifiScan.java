@@ -15,57 +15,62 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-public class WifiScan {
+public class WifiScan extends Thread{
 	WifiManager wifiManager;
-    WifiReceiver receiverWifi;
-    List<ScanResult> wifiList;
+    //WifiReceiver receiverWifi;
+    //List<ScanResult> wifiList;
     Handler handler;
     boolean  isRun;
-	private PrintWriter logFile;
+	//private PrintWriter logFile;
     Context context;
     
-    class WifiReceiver extends BroadcastReceiver {
-        public void onReceive(Context c, Intent intent) {
-        	StringBuilder sb = new StringBuilder();
-            wifiList = wifiManager.getScanResults();
-            for(int i = 0; i < wifiList.size(); i++){
-                sb.append(new Integer(i+1).toString() + ".");
-                sb.append((wifiList.get(i)).toString());
-                sb.append("\\n");
-            }
-            Message msg = handler.obtainMessage();
-			Bundle bundle = new Bundle();
-			bundle.putString("type", "wifiInfo");
-			bundle.putString("data",sb.toString());
-			msg.setData(bundle);
-			handler.sendMessage(msg);
-            if (isRun){
-            	wifiManager.startScan();
-            }
-        }
-    }
+//    class WifiReceiver extends BroadcastReceiver {
+//        public void onReceive(Context c, Intent intent) {
+//        	StringBuilder sb = new StringBuilder();
+//            wifiList = wifiManager.getScanResults();
+//            for(int i = 0; i < wifiList.size(); i++){
+//                sb.append(new Integer(i+1).toString() + ".");
+//                sb.append((wifiList.get(i)).toString());
+//                sb.append("\\n");
+//            }
+//            Message msg = handler.obtainMessage();
+//			Bundle bundle = new Bundle();
+//			bundle.putString("type", "wifiInfo");
+//			bundle.putString("data",sb.toString());
+//			msg.setData(bundle);
+//			handler.sendMessage(msg);
+//            if (isRun){
+//            	wifiManager.startScan();
+//            }
+//        }
+//    }
     
-    public WifiScan(Handler handler, Context context) throws IOException{
-		this.handler = handler;
+    public WifiScan(Context context){
 		isRun = false;
 		wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-		logFile = new PrintWriter(new BufferedWriter(new FileWriter("sdcard/wifiScanInfo.txt", true)));
+		//logFile = new PrintWriter(new BufferedWriter(new FileWriter("sdcard/wifiScanInfo.txt", true)));
 		this.context = context;
     }
     
-    public void start(){
+    @Override
+    public void run(){
     	if (!isRun){
     		isRun = true;
-    		receiverWifi = new WifiReceiver();
-            context.registerReceiver(receiverWifi, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-    		wifiManager.startScan();
+    		while (isRun){
+	    		wifiManager.startScan();
+	    		try {
+					sleep(5*1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
     	}
     }
     
     public void terminate(){
     	if (isRun){
     		isRun = false;
-    		context.unregisterReceiver(receiverWifi);
     	}
     }
 }

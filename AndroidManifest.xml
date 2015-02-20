@@ -26,7 +26,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".WifiScanner"
+            android:name=".PhoneStateScanner"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,6 +34,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".PhoneStateScanService"
+            android:label="Phone State Scan Service"
+            >
+        </service>
         <meta-data android:name="com.google.android.gms.version"
         	android:value="@integer/google_play_services_version" />
     </application>

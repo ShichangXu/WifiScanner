@@ -53,6 +53,7 @@ public class SimpleUDPReceiver extends Thread{
 		  isRun = true;
 		    System.out.println("Receiver thread is running...");
 		    
+		    //open port in NAT
 		    int sendPacketNum = 0;
 		    while ( isRun && sendPacketNum < 3) {
 		    	SimpleMeasurementPacket dataPacket = new SimpleMeasurementPacket(serverId);
@@ -95,12 +96,14 @@ public class SimpleUDPReceiver extends Thread{
 		          System.out.println("Receive Packet: "+packet);
 		          receivePacketNum++;
 		          if(receivePacketNum%1000==0){
-		        	  Message msg = handler.obtainMessage();
-		    			Bundle bundle = new Bundle();
-		    			bundle.putString("type", "receivePacket");
-		    			bundle.putString("data","Receive "+receivePacketNum+" packet.");
-		    			msg.setData(bundle);
-		    			handler.sendMessage(msg);
+		        	  if (handler!=null){
+		        		  Message msg = handler.obtainMessage();
+			    			Bundle bundle = new Bundle();
+			    			bundle.putString("type", "receivePacket");
+			    			bundle.putString("data","Receive "+receivePacketNum+" packet.");
+			    			msg.setData(bundle);
+			    			handler.sendMessage(msg);  
+		        	  }
 		          }
 		          //updateLatestReceiveTime();
 		          logFile.println(packet);
